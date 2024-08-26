@@ -1,0 +1,47 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SSE 自动重连示例</title>
+</head>
+<body>
+  <div id="events"></div>
+
+  <script>
+    var eventsList = document.getElementById('events');
+    var eventSource;
+
+    function addEventToList(eventData) {
+      var newEvent = document.createElement('div');
+      newEvent.textContent = eventData;
+      eventsList.appendChild(newEvent);
+    }
+
+ 
+	  eventSource = new EventSource('http://127.0.0.1:8080/events?order=AK34243455');
+
+      eventSource.onopen = function(event) {
+        console.log('SSE connection opened');
+      };
+
+      eventSource.onmessage = function(event) {
+        console.log('Received event:', event.data);
+        addEventToList(event.data);
+		var jsonObj = JSON.parse(event.data);
+		if (jsonObj.info==="已付款"||jsonObj.info==="超时断开"){
+		  eventSource.close();
+		}
+      };
+
+      eventSource.onerror = function(event) {
+	  console.log(eventSource.readyState)
+		  //eventSource.close()
+          console.error('Error occurred in SSE connection. Reconnecting...');
+     
+      };
+   
+  </script>
+</body>
+</html>
