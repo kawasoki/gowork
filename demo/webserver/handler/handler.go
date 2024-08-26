@@ -8,7 +8,6 @@ import (
 	"log"
 	"sync/atomic"
 	"time"
-	"ztool/database"
 )
 
 type Game struct {
