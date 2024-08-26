@@ -12,7 +12,6 @@ import (
 	"log"
 	"sort"
 	"strings"
-	"sync"
 	"time"
 )
 
@@ -60,24 +59,6 @@ func RateLimit() func(c *gin.Context) {
 			return
 		}
 		c.Next()
-	}
-}
-
-// 只启动一个pod TODO panic之后 后续请求都会 报请勿重复提交
-var requestMap sync.Map
-
-func ReSubmitCheck() func(c *gin.Context) {
-	return func(c *gin.Context) {
-		adminId := c.GetInt("admin")
-		var key = fmt.Sprintf("%d%s", adminId, c.Request.URL.Path)
-		_, loaded := requestMap.LoadOrStore(key, 1)
-		if loaded {
-			c.Abort()
-			c.JSON(200, gin.H{"msg": "请勿重复提交", "code": 400})
-			return
-		}
-		c.Next()
-		requestMap.LoadAndDelete(key)
 	}
 }
 
