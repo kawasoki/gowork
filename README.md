@@ -1,2 +1,2 @@
 # gowork
-just for 自用
+just for me
